@@ -29,6 +29,12 @@ Systematically resolve GitHub PR review comments through structured iteration cy
 
 3. **Categorize Comments**
    - Parse content, identify actionable items
+   - **Verify comment validity** before categorizing:
+     * Read actual code at referenced locations
+     * Check if issue still exists or was already fixed
+     * Verify against authoritative sources (API docs, TypeScript types, existing implementation)
+     * Cross-reference with recent commits for design decisions
+     * Flag automated tool comments that may be incorrect or outdated
    - Categories:
      * **Tests**: Test failures, missing tests, coverage
      * **Linting**: ESLint violations, formatting, type errors
@@ -48,6 +54,11 @@ Systematically resolve GitHub PR review comments through structured iteration cy
 
 5. **Plan Resolution**
    - Determine optimal order, group related comments
+   - **Validate proposed changes** against codebase context:
+     * Search for related code patterns and conventions
+     * Identify existing design decisions (check commit history, comments, documentation)
+     * Verify external dependencies (API response shapes, library behavior)
+     * Consider whether "fixes" might break intentional design choices
    - Identify fix dependencies and conflicts
    - Create task list with TodoWrite
    - Estimate complexity and iterations
@@ -57,6 +68,8 @@ Systematically resolve GitHub PR review comments through structured iteration cy
      * Original comment text
      * File paths and line numbers
      * Resolution criteria
+     * Existing design decisions and rationale
+     * Authoritative sources (API types, documentation)
      * Max iteration count
    - Monitor progress, collect results
 
@@ -91,9 +104,12 @@ Systematically resolve GitHub PR review comments through structured iteration cy
 ## Requirements
 
 - Validate GitHub CLI auth before starting
+- **Verify review comments against actual code** - never blindly accept automated tool feedback
+- **Cross-reference authoritative sources** (API documentation, TypeScript types, library docs)
+- **Respect existing design decisions** - investigate rationale before changing intentional patterns
 - Preserve code functionality
 - Create atomic, reversible commits
-- Document fix assumptions
+- Document fix assumptions and validation performed
 - Flag architectural decisions for manual review
 - Respect existing style/conventions
 - Test after each fix category
@@ -104,9 +120,11 @@ Systematically resolve GitHub PR review comments through structured iteration cy
 
 - Pass clear, specific instructions
 - Include original comment text
+- **Provide full context**: existing design decisions, authoritative sources, related code patterns
 - Specify exact success criteria
 - Set reasonable iteration limits
 - Handle impossible automated resolution
+- Flag when comment contradicts verified code or established patterns
 
 ## Error Handling
 
