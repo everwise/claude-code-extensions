@@ -394,10 +394,35 @@ If a version bump causes test or type-check failures:
 - Attempt to fix the breakage (usually minor import or API changes, or type annotations).
 - If a major version upgrade causes widespread breakage that cannot be easily fixed, **revert that single upgrade** and note it as a known remaining issue for the PR description.
 
-Re-run the grype scan after all remediations to confirm findings are resolved:
+### Re-scan and verify
+
+Re-run the grype scan, capturing both table (for display) and JSON (for diff against the Phase 2 baseline):
 
 ```bash
 grype dir:. --only-fixed -o table -q 2>&1
+GRYPE_JSON_AFTER=$(mktemp -t grype-after.XXXXXX.json)
+grype dir:. --only-fixed -o json -q > "$GRYPE_JSON_AFTER"
+```
+
+Compare `$GRYPE_JSON_AFTER` against the Phase 2 `$GRYPE_JSON` baseline. For each finding in the BEFORE scan, classify it:
+
+- **Resolved** (not present in AFTER) — expected outcome.
+- **Still present** — the remediation didn't take. Either return to Phase 3 to retry with a different approach, or — if the fix would require a major breaking change you've already evaluated and rejected — move it to "Known issues" in the PR body with a clear reason.
+- **New findings in AFTER not in BEFORE** — rare but possible (e.g. a new transitive pulled in by an upgrade). Treat as Phase 3 inputs and remediate.
+
+Surface a concrete summary before proceeding to Phase 5:
+
+```
+Vulnerability remediation summary:
+  Resolved: <N> of <M> findings
+  Still present: <K> (each with a documented reason in Known Issues)
+  New: <J> (should be 0; treat any as bugs in this run)
+```
+
+**Do NOT proceed to Phase 5 if there are still-present findings without a documented reason.** Cleanup:
+
+```bash
+rm -f "$GRYPE_JSON_AFTER" "$GRYPE_JSON"
 ```
 
 ---
