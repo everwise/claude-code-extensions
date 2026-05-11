@@ -412,7 +412,7 @@ Compare `$GRYPE_JSON_AFTER` against the Phase 2 `$GRYPE_JSON` baseline. For each
 
 Surface a concrete summary before proceeding to Phase 5:
 
-```
+```text
 Vulnerability remediation summary:
   Resolved: <N> of <M> findings
   Still present: <K> (each with a documented reason in Known Issues)
