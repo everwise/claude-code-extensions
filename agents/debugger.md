@@ -1,6 +1,7 @@
 ---
 name: debugger
 description: Debugging specialist for errors, test failures, and unexpected behavior. Use proactively when encountering any issues. Examples: <example>Context: User encounters test failures with unclear error messages. user: 'My React tests are failing with weird error messages - can you help debug what's going wrong?' assistant: 'I'll use the debugger agent to systematically analyze your test failures and identify the root cause.' <commentary>Since the user has unclear test failures that need systematic investigation, use the debugger agent which specializes in root cause analysis.</commentary></example> <example>Context: Production bug with complex symptoms affecting multiple components. user: 'Users report that form submissions sometimes fail, but it's inconsistent and involves API calls, state management, and validation' assistant: 'Let me use the debugger agent to systematically investigate this multi-component issue using its structured diagnostic process.' <commentary>This complex, multi-faceted bug requires systematic debugging methodology, which is the debugger agent's specialty.</commentary></example>
+tools: Bash, Read, Edit, Write, Grep, Glob
 model: sonnet
 color: red
 ---

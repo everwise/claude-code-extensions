@@ -1,218 +1,90 @@
-# Claude Code Agents
+# Agent Usage Guide
 
-> **Specialized agents for autonomous development workflows**
+> For the full agent list and overview, see the [main README](../README.md).
 
----
+## Invocation
 
-## 🚀 Quick Reference
-
-**Need to implement a Jira ticket end-to-end?**  
-```> use jira-workitem-implementer for APL-1234```
-
-**Need to review code or a PR?**  
-```> use code-quality-reviewer to review this (block | file | PR)```
-
-**Need to focus on fixing issues systematically?**  
-```> use iterative-quality-fixer to identify and fix X```
-
-**Need to plan out a new feature?**  
-```> use feature-architect to plan implementation of Y feature```
-
-**Need to resolve all PR feedback?**  
-```> use pr-review-comment-resolver for PR #123```
-
-**Need to debug errors or test failures?**  
-```> use debugger to investigate and resolve X issue```
-
-**Need to write tests first?**  
-```> use tdd-test-writer before implementing X functionality```
-
----
-
-## 🔗 Agent Chaining Examples
-
-**Complex Feature Implementation:**  
-`jira-workitem-implementer` → `feature-architect` → `tdd-test-writer` → `code-quality-reviewer`
-
-**Quality Improvement Pipeline:**  
-`debugger` → `iterative-quality-fixer` → `code-quality-reviewer` ✓
-
-**PR Review Workflow:**  
-`pr-review-comment-resolver` → `iterative-quality-fixer` → `pr-comment-validator`
-
----
-
-# 🎯 Agents by Category
-
-## 🛠️ Implementation & Features
-
-### 🧭 [`feature-architect`](feature-architect.md) ⭐
-**3-phase development: explore → plan → implement**
-- Complex features, architectural changes, multi-component bugs
-- *→ Chains: tdd-test-writer → debugger → code-quality-reviewer*
-
-### 🎫 [`jira-workitem-implementer`](jira-workitem-implementer.md) ⭐
-**Complete ticket automation: analysis → code → PR**
-- Full development lifecycle from Jira ticket to merged PR
-- *→ Chains: jira-workitem-analyzer → feature-architect → tdd-test-writer*
-
-### 🧪 [`tdd-test-writer`](tdd-test-writer.md)
-**Write tests before implementation**
-- Test-driven development methodology
-- Use at start of any development task
-
----
-
-## 🐛 Bugs & Debugging
-
-### 🚨 [`debugger`](debugger.md) 🔥
-**Error resolution and troubleshooting**
-- Activates automatically on any errors or test failures
-- Specialized for investigating and resolving issues
-
-### 🔄 [`iterative-quality-fixer`](iterative-quality-fixer.md) ⭐
-**Systematic fix-test-verify cycles**
-- Quality enforcement, automated improvement workflows  
-- *→ Chains: debugger → code-quality-reviewer until passing*
-
----
-
-## ✅ Code Review & Quality
-
-### 👨‍💻 [`code-quality-reviewer`](code-quality-reviewer.md) 🔥
-**Production-ready code analysis**
-- Objective, no-praise feedback on code quality
-- Activates automatically after significant changes
-
-### 💬 [`pr-review-comment-resolver`](pr-review-comment-resolver.md) ⭐
-**Comprehensive PR feedback resolution**
-- Fetches, categorizes, and systematically addresses all PR comments
-- *→ Chains: iterative-quality-fixer for systematic resolution*
-
-### ✂️ [`pr-comment-validator`](pr-comment-validator.md)
-**Clean up outdated PR comments**
-- Identifies which comments are no longer relevant after code changes
-- Perfect for maintaining clean PR conversations
-
-### 💭 [`code-comment-reviewer`](code-comment-reviewer.md)
-**Comment quality and relevance checking**
-- Detects hamburger comments and verifies comment accuracy
-- Ensures comments stay relevant during refactoring
-
----
-
-## 📋 Project Management
-
-### 🎫 [`jira-workitem-analyzer`](jira-workitem-analyzer.md) 🔥  
-**Extract and structure ticket requirements**
-- Activates automatically when working with Jira tickets
-- Produces development-ready summaries from ticket details
-
----
-
-## 📚 Content & Organization
-
-### 📋 [`information-consolidator`](information-consolidator.md) 🔥
-**Structure scattered information**  
-- Activates automatically when scattered/redundant content detected
-- Reorganizes content while maintaining all key details
-
-### 🤖 [`meta-agent`](meta-agent.md)
-**Generate new agent configurations**
-- Creates complete agent config files from descriptions
-- Use when you need to create custom agents
-
----
-
-## 🎪 Legend
-
-⭐ **Orchestrator** - Manages complex, multi-step workflows  
-🔥 **Auto-Activates** - Runs proactively when conditions are met  
-*→ Chains:* - Shows common agent delegation patterns
-
----
-
-# 🏃 Common Workflows
-
-**🎫 Ticket to PR:**  
-Jira Ticket → `jira-workitem-implementer` → `feature-architect` → `tdd-test-writer` → PR Ready
-
-**🔧 Quality Pipeline:**  
-Code Issues → `debugger` → `code-quality-reviewer` → `iterative-quality-fixer` → ✅ Quality Gates Pass
-
-**💬 PR Review Cycle:**  
-PR Comments → `pr-review-comment-resolver` → `iterative-quality-fixer` → `pr-comment-validator` → Clean PR
-
----
-
-# ⚡ Auto-Activating Agents
-*These agents run proactively without being asked:*
-
-- 🚨 **debugger** → Any errors or test failures detected
-- 🔍 **code-quality-reviewer** → After significant code changes  
-- 🔄 **iterative-quality-fixer** → When quality improvements needed
-- 🎫 **jira-workitem-analyzer** → When working with Jira tickets
-- 📚 **information-consolidator** → When scattered content detected
-- 💭 **code-comment-reviewer** → During code reviews or refactoring
-- 🧪 **tdd-test-writer** → At start of development tasks
-- 🔮 **test-validator** → To ensure tests follow best practices
-
----
-
-# 📚 Quick Examples
-
-**Complete Jira Ticket Implementation:**
-```bash
-> use jira-workitem-implementer for APL-1234
-# → Analyzes → Plans → Implements → Tests → Creates PR
-```
-
-**New Feature Development:**
-```bash
-> use feature-architect to implement OAuth authentication
-# → Explores codebase → Plans approach → Guides implementation
-```
-
-**Fix Code Quality Issues:**
-```bash
-> use iterative-quality-fixer to resolve linting errors in src/auth/
-# → Fix → Test → Verify → Repeat until passing
-```
-
-**Address PR Feedback:**
-```bash
-> use pr-review-comment-resolver for PR #123
-# → Fetches comments → Categorizes → Systematically addresses
-```
-
-**Debug Test Failures:**
-```bash
-> use debugger to investigate failing tests in UserService
-# → Analyzes → Identifies root cause → Provides fix
-```
-
----
-
-<details>
-<summary><strong>🔧 Technical Reference</strong></summary>
-
-### Tool Access
-- **`*`** = Full tool access (orchestrators)
-- **Specialized** = Domain-specific tools only  
-- **Read-only** = Analysis agents
-
-### Agent Types
-- **⭐ Orchestrator** = Manages multi-step workflows, delegates to other agents
-- **🔥 Auto-Activating** = Runs proactively when conditions detected
-- **Standard** = Called explicitly for specific tasks
-
-### Quick Command Format
 ```bash
 > use [agent-name] for [specific-task]
 > use [agent-name] to [action] [target]
 ```
 
-### Attribution
-**meta-agent** - Adapted from [claude-code-hooks-mastery](https://github.com/disler/claude-code-hooks-mastery)
+### Examples
 
-</details>
+```bash
+> use jira-workitem-implementer for APL-1234
+# → Analyzes → Plans → Implements → Tests → Creates PR
+
+> use feature-architect to implement OAuth authentication
+# → Explores codebase → Plans approach → Guides implementation
+
+> use debugger to investigate failing tests in UserService
+# → Analyzes → Identifies root cause → Provides fix
+
+> use iterative-quality-fixer to resolve linting errors in src/auth/
+# → Fix → Test → Verify → Repeat until passing
+
+> use pr-review-comment-resolver for PR #123
+# → Fetches comments → Categorizes → Systematically addresses
+
+> use tdd-test-writer before implementing email validation
+# → Writes comprehensive tests → Then implementation
+
+> use code-quality-reviewer to review this PR
+# → Objective analysis → No-praise feedback → Actionable items
+```
+
+## Agent Chaining
+
+Agents delegate to each other automatically. Common flows:
+
+**Ticket to PR:**
+```
+jira-workitem-implementer → feature-architect → tdd-test-writer → PR
+```
+
+**Quality pipeline:**
+```
+debugger → iterative-quality-fixer → code-quality-reviewer → gates pass
+```
+
+**PR review cycle:**
+```
+pr-review-comment-resolver → iterative-quality-fixer → pr-comment-validator → clean PR
+```
+
+## Auto-Activating Agents
+
+These run proactively without being asked:
+
+| Agent | Triggers when |
+|---|---|
+| **debugger** | Errors or test failures detected |
+| **code-quality-reviewer** | After significant code changes |
+| **iterative-quality-fixer** | Quality improvements needed |
+| **jira-workitem-analyzer** | Working with Jira tickets |
+| **information-consolidator** | Scattered content detected |
+| **code-comment-reviewer** | During code reviews or refactoring |
+| **tdd-test-writer** | Start of development tasks |
+| **test-validator** | Test files need quality validation |
+
+## Agent Types
+
+| Type | Meaning |
+|---|---|
+| **Orchestrator** | Manages multi-step workflows, delegates to other agents |
+| **Auto-activating** | Runs proactively when conditions detected |
+| **Standard** | Called explicitly for specific tasks |
+
+## Tool Access
+
+| Level | Agents |
+|---|---|
+| Full (`*`) | feature-architect, jira-workitem-implementer |
+| Broad | debugger, iterative-quality-fixer, tdd-test-writer, pr-review-comment-resolver |
+| Read + analysis | code-quality-reviewer, test-validator, code-comment-reviewer |
+| Specialized | datadog-log-searcher (Bash, WebFetch), meta-agent (Write, WebFetch, Firecrawl) |
+
+## Attribution
+
+**meta-agent** adapted from [claude-code-hooks-mastery](https://github.com/disler/claude-code-hooks-mastery).

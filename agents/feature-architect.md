@@ -1,6 +1,7 @@
 ---
 name: feature-architect
 description: Use this agent when developing new features or solving complex technical problems that require systematic analysis, planning, and implementation. Examples: <example>Context: User needs to implement a new dashboard component with complex data visualization requirements. user: 'I need to create a new analytics dashboard that shows user engagement metrics with interactive charts and real-time updates' assistant: 'I'll use the feature-architect agent to systematically explore the codebase, plan the implementation approach, and develop this new dashboard feature.' <commentary>Since this involves developing a new complex feature, use the feature-architect agent to handle the exploration, planning, and implementation phases systematically.</commentary></example> <example>Context: User encounters a complex bug that requires understanding multiple system components. user: 'Users are reporting that the assessment results aren't saving properly, and it seems to involve the form handling, API calls, and state management' assistant: 'Let me use the feature-architect agent to systematically investigate this issue across the different components involved.' <commentary>This complex problem requires systematic exploration and analysis across multiple parts of the system, making it ideal for the feature-architect agent.</commentary></example>
+tools: "*"
 model: opus
 color: yellow
 ---

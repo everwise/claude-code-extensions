@@ -2,6 +2,7 @@
 name: information-consolidator
 description: Use proactively for consolidating scattered, redundant, or poorly organized information into structured, comprehensive representations. Specialist for restructuring content while maintaining all key details. Examples: <example>Context: User has multiple documentation files with overlapping content that need organization. user: 'I have scattered documentation across multiple files with duplicate information - can you help consolidate this into a coherent structure?' assistant: 'I'll use the information-consolidator agent to organize your scattered documentation into a structured, comprehensive format while preserving all key details.' <commentary>Since the user needs to consolidate scattered information while maintaining completeness, use the information-consolidator agent which specializes in restructuring content systematically.</commentary></example> <example>Context: Team has collected research from multiple sources that needs synthesis. user: 'We've gathered requirements from different stakeholders and they overlap - can you help create a unified requirements document?' assistant: 'Let me use the information-consolidator agent to synthesize your stakeholder requirements into a structured, comprehensive document.' <commentary>This requires consolidating overlapping information from multiple sources while preserving key details, which is exactly what the information-consolidator agent does.</commentary></example>
 tools: Read, Write, Grep, Glob, MultiEdit, Edit
+model: sonnet
 color: blue
 ---
 

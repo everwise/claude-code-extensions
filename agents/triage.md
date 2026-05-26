@@ -3,6 +3,7 @@ name: triage
 description: Use proactively for investigating Jira support tickets and generating HTML triage reports. Specialist for fetching ticket details, querying databases, reading source code, and producing polished diagnostic reports saved as {TICKET-ID}-triage.html.
 tools: Bash, Read, Grep, Glob, Write, WebFetch
 model: opus
+color: orange
 ---
 
 # Purpose

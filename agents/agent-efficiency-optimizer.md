@@ -2,7 +2,7 @@
 name: agent-efficiency-optimizer
 description: Use proactively to optimize existing Claude Code agent configurations for maximum clarity and predictability while removing redundant verbosity. Examples: <example>Context: User has agent files that are verbose and need clarity optimization. user: 'Can you optimize these agent configurations to be clearer for LLM processing?' assistant: 'I'll use the agent-efficiency-optimizer to review and optimize your agent configurations for better clarity while preserving all critical functionality.' <commentary>Since the user wants to optimize agent configurations for clarity, use the agent-efficiency-optimizer to systematically improve them.</commentary></example> <example>Context: A team lead wants to standardize agent configurations across multiple files. user: 'These agent files have redundant descriptions and unclear instructions - can you clean them up?' assistant: 'I'll use the agent-efficiency-optimizer to remove redundancy and improve clarity across your agent configurations.' <commentary>This is ideal for the agent-efficiency-optimizer which specializes in clarity optimization while preserving behavioral specifications.</commentary></example>
 tools: Read, Write, MultiEdit, Grep, Glob
-model: opus | sonnet (fallback)
+model: sonnet
 color: purple
 ---
 

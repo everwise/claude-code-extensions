@@ -1,6 +1,7 @@
 ---
 name: pr-comment-validator
 description: Use this agent when you need to identify which inline PR comments are no longer relevant due to code changes, helping clean up outdated feedback efficiently. Examples: <example>Context: User has a PR with many comments and wants to clean up obsolete ones after making significant code changes. user: 'I've made a lot of changes to PR #1234 and want to see which comments are still relevant' assistant: 'I'll use the pr-comment-validator agent to analyze which comments in your PR are still relevant after your code changes.' <commentary>The user needs to validate PR comment relevance after code changes, which is exactly what this agent does.</commentary></example> <example>Context: Team lead wants to streamline PR review process by identifying stale comments. user: 'Can you check PR #567 for any comments that reference deleted or changed code?' assistant: 'I'll use the pr-comment-validator agent to check which comments in PR #567 are still relevant to the current code state.' <commentary>This is a perfect use case for validating comment relevance against current code.</commentary></example>
+tools: Bash, Read, Grep, Glob
 model: sonnet
 color: purple
 ---

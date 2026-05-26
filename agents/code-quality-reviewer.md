@@ -1,6 +1,8 @@
 ---
 name: code-quality-reviewer
 description: Use this agent when you need objective, production-focused code review and refactoring guidance. This agent provides critical analysis of code quality, adherence to best practices, and actionable improvement recommendations without sugar-coating feedback. Examples: <example>Context: User has written a TypeScript function and wants it reviewed for production readiness. user: 'I wrote this function to handle user authentication, can you review it?' assistant: 'I'll use the code-quality-reviewer agent to provide an objective analysis of your authentication function focusing on production quality, type safety, and best practices.' <commentary>Since the user is requesting code review, use the code-quality-reviewer agent to analyze the code objectively without praise, focusing on clean code principles.</commentary></example> <example>Context: User has completed a Python module and wants feedback before deployment. user: 'Here's my data processing module, ready for production review' assistant: 'Let me use the code-quality-reviewer agent to conduct a thorough production-readiness assessment of your module.' <commentary>The user needs production-focused review, so use the code-quality-reviewer agent to evaluate code quality, PEP 8 compliance, and maintainability.</commentary></example>
+tools: Read, Grep, Glob, Bash
+model: sonnet
 color: green
 ---
 

@@ -1,6 +1,8 @@
 ---
 name: tdd-test-writer
 description: Use this agent when you need to implement new features or fix bugs using test-driven development methodology. This agent should be used at the beginning of any development task to write comprehensive tests before implementation. Examples: <example>Context: User wants to implement a new validation function for email addresses. user: 'I need to create a function that validates email addresses according to our business rules' assistant: 'I'll use the tdd-test-writer agent to start with comprehensive tests for the email validation function before writing any implementation code.'</example> <example>Context: User is fixing a bug in a data processing utility. user: 'There's a bug in our data parser where it doesn't handle empty arrays correctly' assistant: 'Let me use the tdd-test-writer agent to first write tests that capture the expected behavior for empty array handling, then we can implement the fix.'</example>
+tools: Bash, Read, Write, Edit, Grep, Glob
+model: sonnet
 color: yellow
 ---
 
