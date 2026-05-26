@@ -14,7 +14,6 @@ Specialized agents and commands for Claude Code that enhance development workflo
 
 ## Installation
 
-### 1. Install Extensions
 ```bash
 # Clone the repository
 git clone https://github.com/everwise/claude-code-extensions.git
@@ -23,11 +22,11 @@ cd claude-code-extensions
 # Create Claude Code directories
 mkdir -p ~/.claude/{agents,commands}
 
-# Install agents and commands
+# Symlink agents and commands
 ln -sf $(pwd)/agents ~/.claude/agents/torch
 ln -sf $(pwd)/commands ~/.claude/commands/torch
 
-# Verify installation
+# Verify
 ls ~/.claude/agents/torch/
 ls ~/.claude/commands/torch/
 ```
@@ -59,9 +58,15 @@ The agents follow a hierarchical structure with orchestrational agents coordinat
 
 ## Commands
 
-Custom Claude Code commands for streamlined workflows:
+Custom commands available as `/torch:<command>`:
 
-- **pr-refresh-summary** → refresh PR summary to comprehensively reflect all current changes while preserving template structure
+- **pr** → Stage, commit, push, and create a GitHub PR
+- **pr-refresh-summary** → Refresh PR summary to reflect all current changes
+- **pr-review** → AI-powered PR review with inline GitHub comments
+- **pr-gemini-review** → Trigger Gemini code review on current PR
+- **triage** → Investigate a Jira support ticket and generate HTML triage report
+- **upload-artifact** → Upload HTML to S3 artifacts bucket with shareable URL
+- **reopen-assessment** → Reopen a 360 assessment for additional feedback
 
 ## Quick Reference
 
