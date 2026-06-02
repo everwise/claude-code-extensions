@@ -5,6 +5,8 @@ REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 CLAUDE_DIR="$HOME/.claude"
 AGENTS_DIR="$CLAUDE_DIR/agents"
 COMMANDS_DIR="$CLAUDE_DIR/commands"
+DESIGN_LINK="$CLAUDE_DIR/design"
+TEMPLATES_LINK="$CLAUDE_DIR/templates"
 NAMESPACE="torch"
 
 RED='\033[0;31m'
@@ -71,6 +73,18 @@ check_status() {
         warn "  Commands: not installed"
     fi
 
+    if [[ -L "$DESIGN_LINK" ]]; then
+        info "  Design:   $DESIGN_LINK -> $(readlink "$DESIGN_LINK")"
+    else
+        warn "  Design:   not installed"
+    fi
+
+    if [[ -L "$TEMPLATES_LINK" ]]; then
+        info "  Templates: $TEMPLATES_LINK -> $(readlink "$TEMPLATES_LINK")"
+    else
+        warn "  Templates: not installed"
+    fi
+
     echo ""
 
     if [[ -L "$agents_link" && -L "$commands_link" ]]; then
@@ -109,10 +123,25 @@ install() {
     ln -sf "$REPO_DIR/agents" "$agents_link"
     ln -sf "$REPO_DIR/commands" "$commands_link"
 
+    # Design guidelines and HTML templates are shared (not namespaced) — skills
+    # reference them as ~/.claude/design/* and ~/.claude/templates/*.
+    if [[ -L "$DESIGN_LINK" || -e "$DESIGN_LINK" ]]; then
+        warn "Replacing existing design link: $DESIGN_LINK"
+        rm -f "$DESIGN_LINK"
+    fi
+    if [[ -L "$TEMPLATES_LINK" || -e "$TEMPLATES_LINK" ]]; then
+        warn "Replacing existing templates link: $TEMPLATES_LINK"
+        rm -f "$TEMPLATES_LINK"
+    fi
+    ln -sf "$REPO_DIR/design" "$DESIGN_LINK"
+    ln -sf "$REPO_DIR/templates" "$TEMPLATES_LINK"
+
     echo ""
     info "Installed:"
-    info "  Agents:   $agents_link -> $REPO_DIR/agents"
-    info "  Commands: $commands_link -> $REPO_DIR/commands"
+    info "  Agents:    $agents_link -> $REPO_DIR/agents"
+    info "  Commands:  $commands_link -> $REPO_DIR/commands"
+    info "  Design:    $DESIGN_LINK -> $REPO_DIR/design"
+    info "  Templates: $TEMPLATES_LINK -> $REPO_DIR/templates"
     echo ""
 
     local agent_count command_count
@@ -141,6 +170,18 @@ uninstall() {
     if [[ -L "$commands_link" ]]; then
         rm "$commands_link"
         info "Removed: $commands_link"
+        removed=1
+    fi
+
+    if [[ -L "$DESIGN_LINK" ]]; then
+        rm "$DESIGN_LINK"
+        info "Removed: $DESIGN_LINK"
+        removed=1
+    fi
+
+    if [[ -L "$TEMPLATES_LINK" ]]; then
+        rm "$TEMPLATES_LINK"
+        info "Removed: $TEMPLATES_LINK"
         removed=1
     fi
 
