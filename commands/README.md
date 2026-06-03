@@ -10,6 +10,7 @@ Custom Claude Code commands for streamlined workflows.
 - **pr-gemini-review** - Comment "@gemini-code-assist review" on the current PR
 - **artifact-design** - Design or redesign standalone HTML artifacts (reports, dashboards, prototypes) with Torch's internal tooling aesthetic via /impeccable
 - **triage** - Investigate a Jira support ticket and generate a polished HTML triage report
+- **qa** - Functionally QA a Jira work item in a live environment — gather authoritative context, build a confirmed test plan, drive browser testing via the chrome-devtools MCP, and capture screenshot proof
 - **upload-artifact** - Upload an HTML file to the internal artifacts S3 bucket and return a shareable URL
 - **reopen-assessment** - Reopen a 360 assessment for additional feedback
 
