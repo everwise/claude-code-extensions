@@ -154,7 +154,7 @@ A ticket is tested across environments over time; there is **one** `plan.json` p
 When the caller drives execution, follow the plan case by case. This section documents the method the caller applies; do not perform it yourself in research mode.
 
 - Drive the app with the **chrome-devtools MCP**:
-  - `navigate_page` straight to the login URL with **both** `auth_type=email` (forces the username/password form instead of SSO) **and** `email=<test account>` prefilled — e.g. `https://app.dev.torch.io/login?auth_type=email&email=user289108@ewhosts.net`. This skips the initial email-entry screen and lands directly on the password step. Password `ShopTrafficPlans`, fallback `Test@123`.
+  - `navigate_page` straight to the login page at path `/v2/auth/login` with **both** `auth_type=email` **and** `email=<test account>` prefilled — e.g. `https://app.dev.torch.io/v2/auth/login?auth_type=email&email=user289108@ewhosts.net`. On **local / dev / sandbox / staging**, the `auth_type=email` query param is **required** — it forces the username/password form (instead of SSO) so a password field appears; omit it and you get no password field. `email=` then skips the initial email-entry screen and lands directly on the password step. Password `ShopTrafficPlans`, fallback `Test@123`.
   - `take_snapshot` to read the a11y tree and get element `uid`s (prefer snapshot over screenshot for navigation).
   - `click` / `fill` by `uid` to perform steps.
   - `wait_for` text when transitions are async.
