@@ -104,7 +104,7 @@ Available as `/torch:<command>` in Claude Code:
 | **pr-gemini-review** | Trigger Gemini code review on current PR |
 | **vuln-remediation** | Remediate dependency vulnerabilities via upgrades + draft PR |
 | **triage** | Investigate Jira support ticket, generate HTML triage report |
-| **qa** | Functionally QA a Jira work item in a live environment with a confirmed test plan + screenshot proof |
+| **qa** | Functionally QA a Jira work item across environments (dev→staging→prod) in one accumulating report, with a confirmed test plan + screenshot proof |
 | **upload-artifact** | Upload HTML to S3 artifacts bucket with shareable URL |
 | **reopen-assessment** | Reopen a 360 assessment for additional feedback |
 
