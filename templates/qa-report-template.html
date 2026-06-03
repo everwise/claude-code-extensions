@@ -1,0 +1,263 @@
+<!doctype html>
+<!--
+  Torch QA report template (multi-environment).
+  GENERATION: copy this file, then in the first <script> replace the placeholder on the
+  "const PLAN = ... ;" line with the exact contents of the ticket's plan.json. Everything
+  renders from that single embedded object — header, per-env verdict switcher, cards, and
+  Copy-for-Jira. To update results, re-inject the updated plan.json (regenerate) — the
+  layout/JS is stable. Screenshots are referenced by relative path; never embed base64.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QA Test Plan</title>
+    <style>
+      :root {
+        --gold:#f2b61b; --orange:#f14a08; --maroon:#7a0800; --teal:#003744; --near-black:#16000d;
+        --warm-white:#fff8f4; --mint:#ddefe5; --ice:#d3f3f2; --dark-gold:#bf8d0b;
+        --bg:#fff8f4; --surface:#fffcfa; --text:#16000d; --text-secondary:#5a4d49;
+        --accent:#7a0800; --accent-hover:#f14a08; --highlight-subtle:#fdf3d7; --border:#e8ddd6;
+        --success:#ddefe5; --success-text:#1a5c38; --warning-text:#bf8d0b; --danger-text:#7a0800;
+        --font-heading:'Gibonic',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+        --font-body:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+        --font-mono:'SF Mono',SFMono-Regular,ui-monospace,Menlo,monospace;
+        --max-width:1100px; --code-bg:#ece9e6;
+      }
+      *{margin:0;padding:0;box-sizing:border-box;}
+      body{font-family:var(--font-body);font-size:16px;line-height:24px;color:var(--text);background:var(--bg);}
+      a{color:var(--accent);}
+      .header{background:var(--teal);color:var(--warm-white);padding:48px 40px 40px;}
+      .header-inner{max-width:var(--max-width);margin:0 auto;}
+      .header h1{font-family:var(--font-heading);font-size:32px;line-height:40px;font-weight:600;letter-spacing:-0.02em;}
+      .header .meta{font-size:14px;color:var(--ice);margin-top:8px;}
+      .header .subtitle{font-size:18px;line-height:28px;margin-top:14px;}
+      .env-group{display:inline-flex;flex-wrap:wrap;margin-top:20px;border:1px solid rgba(255,248,244,.3);border-radius:8px;overflow:hidden;}
+      .eg-item{display:inline-flex;align-items:center;gap:8px;background:rgba(255,248,244,.06);border:none;border-right:1px solid rgba(255,248,244,.2);padding:9px 16px;font-size:14px;color:var(--warm-white);cursor:pointer;font-family:var(--font-body);}
+      .eg-item:last-child{border-right:none;}
+      .eg-item:hover{background:rgba(255,248,244,.14);}
+      .eg-item.active{background:rgba(255,248,244,.24);}
+      .eg-item .eg-name{font-weight:600;}
+      .eg-item .eg-badge{font-size:15px;line-height:1;}
+      .eg-item .eg-partial{color:#ffd98a;font-weight:600;font-size:13px;}
+      .eg-item .eg-ran{color:var(--ice);font-size:12px;}
+      .envbar{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);box-shadow:0 1px 0 rgba(0,0,0,.02);}
+      .envbar-inner{max-width:var(--max-width);margin:0 auto;padding:14px 40px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+      .envbar .lbl{font-size:12px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;font-weight:600;}
+      .seg{display:inline-flex;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+      .seg button{font-family:var(--font-body);font-size:14px;font-weight:600;color:var(--text-secondary);background:none;border:none;padding:8px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;border-right:1px solid var(--border);}
+      .seg button:last-child{border-right:none;}
+      .seg button.active{background:var(--teal);color:var(--warm-white);}
+      .seg .dot{width:8px;height:8px;border-radius:50%;}
+      .copywrap{margin-left:auto;display:flex;align-items:center;gap:10px;}
+      .cur-verdict{font-size:14px;font-weight:600;}
+      .jira-copy-btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--warm-white);background:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:8px 14px;cursor:pointer;}
+      .jira-copy-btn:hover{background:var(--accent-hover);border-color:var(--accent-hover);} .jira-copy-btn.copied{background:var(--success-text);border-color:var(--success-text);}
+      .content{max-width:var(--max-width);margin:0 auto;padding:32px 40px 48px;}
+      h2{font-family:var(--font-heading);font-size:22px;font-weight:600;margin-bottom:20px;}
+      section{margin-bottom:40px;} p{margin-bottom:14px;}
+      code{font-family:var(--font-mono);font-size:14px;background:var(--code-bg);padding:0 4px;border-radius:3px;}
+      .meta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+      .meta-grid .cell{background:var(--surface);padding:14px 20px;} .meta-grid .k{font-size:13px;color:var(--text-secondary);} .meta-grid .v{font-size:15px;font-weight:600;margin-top:3px;word-break:break-word;}
+      .status{display:inline-flex;align-items:center;gap:6px;font-size:13px;line-height:22px;font-weight:600;padding:2px 10px;border-radius:999px;white-space:nowrap;}
+      .status-pass{color:var(--success-text);background:var(--success);}
+      .status-fail{color:var(--danger-text);background:#fde4da;}
+      .status-blocked{color:var(--warning-text);background:var(--highlight-subtle);}
+      .status-skipped{color:var(--text-secondary);background:#efece9;border:1px dashed var(--border);}
+      .status-pending{color:var(--text-secondary);background:var(--highlight-subtle);}
+      .case{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:22px 28px;margin-bottom:20px;}
+      .case-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;cursor:pointer;user-select:none;}
+      .case-id-title{display:flex;align-items:baseline;gap:10px;flex:1;min-width:260px;}
+      .case-caret{align-self:center;flex-shrink:0;color:var(--text-secondary);transition:transform .15s;transform:rotate(90deg);}
+      .case.collapsed .case-caret{transform:rotate(0);} .case.collapsed .case-body{display:none;}
+      .case-id{font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--accent);}
+      .case-title{font-family:var(--font-heading);font-size:18px;line-height:24px;font-weight:600;}
+      .case-tags{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+      .case-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+      .tag{font-size:12px;line-height:20px;font-weight:600;padding:1px 9px;border-radius:6px;border:1px solid var(--border);color:var(--text-secondary);background:none;text-transform:capitalize;}
+      .tag.e2e{color:var(--success-text);border-color:var(--success-text);text-transform:none;}
+      .env-mini{display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;}
+      .env-mini .em{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;opacity:.45;}
+      .env-mini .em.active{opacity:1;}
+      .em-name{color:var(--text-secondary);text-transform:uppercase;letter-spacing:.03em;font-size:11px;}
+      .em-badge{font-size:13px;line-height:1;}
+      .case-body{margin-top:16px;}
+      .field{margin-top:14px;} .field-label{font-size:13px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;}
+      .field-body{font-size:15px;line-height:23px;}
+      ul.steps{list-style:none;display:flex;flex-direction:column;gap:3px;} ul.steps li{font-size:15px;line-height:23px;}
+      .shared-def{border-bottom:1px solid var(--border);padding-bottom:16px;}
+      .env-result{margin-top:16px;border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:14px 18px;background:var(--bg);}
+      .env-result-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+      .env-ran{font-size:12px;color:var(--text-secondary);}
+      .acct{font-size:14px;line-height:22px;} .acct .arole{font-weight:600;}
+      .screens{display:flex;flex-direction:column;gap:10px;margin-top:4px;}
+      .screens img{max-width:100%;border:1px solid var(--border);border-radius:6px;}
+      .skip-reason{font-size:14px;line-height:22px;color:var(--text-secondary);background:#efece9;border:1px dashed var(--border);border-radius:6px;padding:12px 16px;margin-top:12px;}
+      .notes{font-size:13px;line-height:22px;color:var(--text-secondary);border-top:1px solid var(--border);margin-top:16px;padding-top:12px;} .notes strong{color:var(--text);}
+      .vq-control{display:inline-flex;align-items:center;gap:8px;margin-top:12px;font-size:14px;font-weight:600;color:var(--accent);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 12px;cursor:pointer;}
+      .vq-control:hover{border-color:var(--accent-hover);color:var(--accent-hover);}
+      .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(22,0,13,.55);z-index:100;padding:32px;align-items:center;justify-content:center;}
+      .modal-backdrop.open{display:flex;}
+      .modal{background:var(--bg);border-radius:8px;width:92vw;max-width:1000px;height:86vh;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--border);}
+      .modal-header{background:var(--teal);color:var(--warm-white);padding:20px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+      .modal-header h3{font-family:var(--font-heading);font-size:20px;font-weight:600;} .modal-header .sub{font-size:13px;color:var(--ice);margin-top:3px;}
+      .modal-close{background:transparent;border:1px solid var(--ice);color:var(--warm-white);font-size:14px;font-weight:600;border-radius:6px;padding:6px 14px;cursor:pointer;}
+      .modal-body{padding:24px 28px 28px;overflow-y:auto;display:flex;flex-direction:column;gap:20px;}
+      .vq-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+      .vq-item-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--bg);}
+      .vq-db{display:inline-block;font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--teal);background:var(--ice);border-radius:4px;padding:1px 8px;margin-bottom:4px;}
+      .vq-purpose{font-size:13px;color:var(--text-secondary);}
+      .copy-btn{flex-shrink:0;background:var(--accent);color:var(--warm-white);border:none;font-size:13px;font-weight:600;border-radius:6px;padding:6px 14px;cursor:pointer;} .copy-btn.copied{background:var(--success-text);}
+      .vq-item pre{font-family:var(--font-mono);font-size:13px;line-height:21px;padding:14px 18px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;color:var(--near-black);background:var(--code-bg);}
+      .footer{max-width:var(--max-width);margin:0 auto;padding:28px 40px;border-top:1px solid var(--border);font-size:13px;color:var(--text-secondary);}
+      @media (max-width:768px){.header{padding:32px 16px 0;}.envbar-inner{padding:12px 16px;}.content{padding:24px 16px 40px;}.meta-grid{grid-template-columns:1fr;}.footer{padding:24px 16px;}}
+      @media print{.envbar,.modal-backdrop,.case-caret{display:none!important;}.case.collapsed .case-body{display:block!important;}.case{page-break-inside:avoid;}}
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-inner">
+        <h1 id="hTitle">QA Test Plan</h1>
+        <div class="meta">For internal use only — do not distribute</div>
+        <div class="subtitle" id="hSub"></div>
+        <div class="env-group" id="envVerdicts"></div>
+      </div>
+    </div>
+
+    <div class="envbar">
+      <div class="envbar-inner">
+        <span class="lbl">Environment</span>
+        <div class="seg" id="seg"></div>
+        <div class="copywrap">
+          <span class="cur-verdict" id="curVerdict"></span>
+          <button class="jira-copy-btn" id="jiraCopy">Copy for Jira</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <section><h2>Overview</h2><div class="meta-grid" id="overview"></div></section>
+      <section><h2>Test Cases · <span id="activeEnvName"></span></h2><div id="cases"></div></section>
+      <section id="e2eSection" style="display:none"><h2>E2E Suite Recommendations</h2><p id="e2eRec"></p></section>
+    </div>
+
+    <div class="modal-backdrop" id="vqModal" role="dialog" aria-modal="true">
+      <div class="modal">
+        <div class="modal-header"><div><h3 id="vqTitle">Validation queries</h3><div class="sub" id="vqSub"></div></div><button class="modal-close" id="vqClose">Close · Esc</button></div>
+        <div class="modal-body" id="vqBody"></div>
+      </div>
+    </div>
+    <div class="footer">Generated by Lantern · QA · internal use only — do not distribute</div>
+
+    <script>
+      // ── Plan data: the placeholder below is replaced with the ticket's plan.json at generation ──
+      const PLAN = __PLAN_JSON__;
+
+      const ENVS = PLAN.envsTested || [];
+      const LABEL = e => ({ local:"Local", dev:"Dev", sandbox:"Sandbox", staging:"Staging", prod:"Prod" }[e] || (e.charAt(0).toUpperCase()+e.slice(1)));
+      const ENV_META = {};
+      ENVS.forEach(e => { const m = (PLAN.environments && PLAN.environments[e]) || {}; ENV_META[e] = { label: LABEL(e), appUrl: m.appUrl || "", verdict: m.verdict || "pending", ranAt: m.ranAt || "" }; });
+      let ACTIVE = ENVS[ENVS.length - 1];
+
+      const STATUS_LABEL = { pass:"Pass", fail:"Fail", blocked:"Blocked", skipped:"Skipped", pending:"Pending" };
+      const STATUS_EMOJI = { pass:"✅", fail:"❌", blocked:"🚫" };                          // verdict: pass/fail/blocked only
+      const MINI_EMOJI = { pass:"✅", fail:"❌", blocked:"🚫", skipped:"⏭️", pending:"⏳" }; // per-env case glyphs
+      const CAT_LABEL = { "bug-repro":"Bug repro", "acceptance-criteria":"Acceptance", "regression":"Regression", "edge-case":"Edge case" };
+      const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+      const emoji = l => { const e = STATUS_EMOJI[String(l).trim().toLowerCase()]; return e ? e+" " : ""; };
+      const badge = st => `<span class="status status-${st}">${emoji(st)}${STATUS_LABEL[st]||st}</span>`;
+      const evLabel = v => v.charAt(0).toUpperCase()+v.slice(1);
+      const vBadge = v => { const e = STATUS_EMOJI[v]; return e ? `<span class="eg-badge" title="${evLabel(v)}">${e}</span>` : `<span class="eg-partial">${evLabel(v)}</span>`; };
+
+      function renderHead(){
+        document.getElementById("hTitle").textContent = `QA Test Plan · ${PLAN.ticket||""}`;
+        document.getElementById("hSub").textContent = PLAN.title || "";
+        document.getElementById("overview").innerHTML =
+          `<div class="cell"><div class="k">Ticket</div><div class="v"><a href="${esc(PLAN.ticketUrl||("https://torchio.atlassian.net/browse/"+(PLAN.ticket||"")))}">${esc(PLAN.ticket||"")}</a>${PLAN.type?` · ${esc(PLAN.type)}`:""}</div></div>`+
+          `<div class="cell"><div class="k">Envs tested</div><div class="v">${ENVS.map(e=>ENV_META[e].label).join(", ")||"—"}</div></div>`+
+          `<div class="cell"><div class="k">Fix version</div><div class="v">${esc(PLAN.fixVersion||"—")}</div></div>`;
+        if (PLAN.e2eRecommendations) { document.getElementById("e2eSection").style.display=""; document.getElementById("e2eRec").textContent = PLAN.e2eRecommendations; }
+      }
+      function renderEnvVerdicts(){
+        document.getElementById("envVerdicts").innerHTML = ENVS.map(e => { const m = ENV_META[e];
+          return `<button class="eg-item ${e===ACTIVE?"active":""}" data-env="${e}"><span class="eg-name">${m.label}</span>${vBadge(m.verdict)}${m.ranAt?`<span class="eg-ran">${esc(m.ranAt)}</span>`:""}</button>`; }).join("");
+        document.querySelectorAll(".eg-item").forEach(c => c.addEventListener("click",()=>setActive(c.dataset.env)));
+      }
+      function renderSeg(){
+        document.getElementById("seg").innerHTML = ENVS.map(e => `<button data-env="${e}" class="${e===ACTIVE?"active":""}"><span class="dot status-${ENV_META[e].verdict==="partial"?"blocked":ENV_META[e].verdict}"></span>${ENV_META[e].label}</button>`).join("");
+        document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click",()=>setActive(b.dataset.env)));
+      }
+      function accountsHtml(accts){
+        if(!accts||!accts.length) return "";
+        return `<div class="field"><div class="field-label">Accounts</div><div class="field-body">${accts.map(a=>`<div class="acct"><span class="arole">${esc(a.role)}</span> — <code>${esc(a.email)}</code>${a.tenant&&a.tenant!=="—"?` · ${esc(a.tenant)}`:""}${a.purpose?` · ${esc(a.purpose)}`:""}</div>`).join("")}</div></div>`;
+      }
+      function envResult(tc){
+        const e = ACTIVE, r = tc.results && tc.results[e], m = ENV_META[e];
+        if(!r) return `<div class="env-result"><div class="env-result-head">${badge("pending")}<span class="env-ran">${m.label} — not tested</span></div></div>`;
+        if(r.status==="skipped") return `<div class="env-result"><div class="env-result-head">${badge("skipped")}<span class="env-ran">${m.label} · ${esc(r.ranAt||"")}</span></div><div class="skip-reason">${esc(r.skipReason||"Skipped.")}</div></div>`;
+        return `<div class="env-result">
+          <div class="env-result-head">${badge(r.status)}<span class="env-ran">${m.label}${m.appUrl?` · <a href="${esc(m.appUrl)}">${esc(m.appUrl)}</a>`:""}${r.ranAt?` · ${esc(r.ranAt)}`:""}</span></div>
+          ${accountsHtml(r.testAccounts)}
+          <div class="field"><div class="field-label">Result</div><div class="field-body">${esc(r.actual||"—")}</div></div>
+          ${r.screenshots&&r.screenshots.length?`<div class="field"><div class="field-label">Screenshots</div><div class="screens">${r.screenshots.map(s=>`<img src="${esc(s)}" alt="${esc(tc.id)} ${m.label}" loading="lazy">`).join("")}</div></div>`:""}
+        </div>`;
+      }
+      function renderCases(){
+        document.getElementById("cases").innerHTML = PLAN.testCases.map(tc => {
+          const envs = ENVS.filter(e => tc.results && tc.results[e]);
+          const mini = envs.map(e => { const st = tc.results[e].status; return `<span class="em ${e===ACTIVE?"active":""}" title="${ENV_META[e].label}: ${STATUS_LABEL[st]||st}"><span class="em-name">${ENV_META[e].label}</span><span class="em-badge">${MINI_EMOJI[st]||""}</span></span>`; }).join("");
+          const e2e = tc.e2eCandidate&&tc.e2eCandidate.recommended ? `<span class="tag e2e" title="${esc(tc.e2eCandidate.rationale||"")}">E2E candidate</span>` : "";
+          const vq = (tc.validationQueries&&tc.validationQueries.length) ? `<div class="vq-control" data-case="${tc.id}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 9l7 7 7-7"/></svg>Validation queries (${tc.validationQueries.length})</div>` : "";
+          const notes = tc.e2eCandidate ? `<div class="notes"><strong>E2E:</strong> ${tc.e2eCandidate.recommended?"":"not recommended — "}${esc(tc.e2eCandidate.rationale||"")}</div>` : (tc.notes?`<div class="notes">${esc(tc.notes)}</div>`:"");
+          return `<div class="case collapsed" id="case-${tc.id}">
+            <div class="case-top">
+              <div class="case-id-title"><span class="case-caret"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span><span class="case-id">${esc(tc.id)}</span><span class="case-title">${esc(tc.title)}</span></div>
+              <div class="case-tags"><span class="env-mini">${mini}</span></div>
+            </div>
+            <div class="case-meta"><span class="tag">${CAT_LABEL[tc.category]||tc.category}</span><span class="tag">${esc(tc.priority||"")}</span>${e2e}</div>
+            <div class="case-body">
+              <div class="shared-def">
+                ${tc.preconditions?`<div class="field"><div class="field-label">Preconditions</div><div class="field-body">${esc(tc.preconditions)}</div></div>`:""}
+                <div class="field"><div class="field-label">Steps</div><ul class="steps">${(tc.steps||[]).map(s=>`<li>${esc(s)}</li>`).join("")}</ul></div>
+                <div class="field"><div class="field-label">Expected outcome</div><div class="field-body">${esc(tc.expected)}</div></div>
+                ${vq}
+              </div>
+              ${envResult(tc)}
+              ${notes}
+            </div>
+          </div>`;
+        }).join("");
+        document.querySelectorAll(".case-top").forEach(t => t.addEventListener("click",()=>t.parentElement.classList.toggle("collapsed")));
+        document.querySelectorAll(".vq-control").forEach(el => el.addEventListener("click",ev=>{ev.stopPropagation();openModal(el.dataset.case);}));
+      }
+      function setActive(e){ ACTIVE=e; renderEnvVerdicts(); renderSeg(); renderCases(); syncBar(); }
+      function syncBar(){
+        const m = ENV_META[ACTIVE]; if(!m) return;
+        document.getElementById("curVerdict").textContent = `${m.label}: ${emoji(m.verdict)}${evLabel(m.verdict)}`;
+        document.getElementById("activeEnvName").textContent = m.label;
+      }
+      function openModal(caseId){
+        const tc = PLAN.testCases.find(t=>t.id===caseId); const vq = (tc&&tc.validationQueries)||[];
+        document.getElementById("vqTitle").textContent = `${tc.id} · Validation queries`;
+        document.getElementById("vqSub").textContent = tc.title;
+        document.getElementById("vqBody").innerHTML = vq.map((q,i)=>`<div class="vq-item"><div class="vq-item-head"><div><span class="vq-db">${esc(q.database)}</span><div class="vq-purpose">${esc(q.purpose)}</div></div><button class="copy-btn" data-q="${i}">Copy</button></div><pre>${esc(q.query)}</pre></div>`).join("");
+        document.getElementById("vqBody").querySelectorAll(".copy-btn").forEach((b,i)=>b.addEventListener("click",()=>{navigator.clipboard.writeText(vq[i].query);b.textContent="Copied";b.classList.add("copied");setTimeout(()=>{b.textContent="Copy";b.classList.remove("copied");},1400);}));
+        document.getElementById("vqModal").classList.add("open");
+      }
+      const closeModal = () => document.getElementById("vqModal").classList.remove("open");
+      document.getElementById("vqClose").addEventListener("click",closeModal);
+      document.getElementById("vqModal").addEventListener("click",e=>{if(e.target.id==="vqModal")closeModal();});
+      document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+
+      // Copy for Jira — concise Markdown for the ACTIVE env (the switcher is the env selector)
+      const mdCell = s => String(s==null?"":s).replace(/\s*\n\s*/g," ").replace(/\|/g,"\\|").trim();
+      const withEmoji = l => { const e = STATUS_EMOJI[String(l).trim().toLowerCase()]; return e ? `${e} ${l}` : l; };
+      function buildJira(env){ const m = ENV_META[env];
+        const rows = PLAN.testCases.filter(tc=>tc.results&&tc.results[env]).map(tc=>{ const r=tc.results[env]; return `| ${tc.id} | ${mdCell(tc.title)} | ${withEmoji(STATUS_LABEL[r.status]||r.status)} | ${mdCell(r.actual||r.skipReason)} |`; }).join("\n");
+        return [`**Environment:** ${m.label} · **Verdict:** ${withEmoji(evLabel(m.verdict))}`,``,`| ID | Description | Result | Notes |`,`| --- | --- | --- | --- |`,rows].join("\n"); }
+      document.getElementById("jiraCopy").addEventListener("click",()=>{ const btn=document.getElementById("jiraCopy"); navigator.clipboard.writeText(buildJira(ACTIVE)).then(()=>{const p=btn.textContent;btn.classList.add("copied");btn.textContent="Copied "+ENV_META[ACTIVE].label;setTimeout(()=>{btn.classList.remove("copied");btn.textContent=p;},1600);}); });
+
+      renderHead(); renderEnvVerdicts(); renderSeg(); renderCases(); syncBar();
+    </script>
+  </body>
+</html>

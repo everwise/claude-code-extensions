@@ -46,8 +46,9 @@ cd claude-code-extensions
 | Dependency | Used by | Install |
 |---|---|---|
 | [gh CLI](https://cli.github.com/) | PR commands, pr-comment-validator | `brew install gh` |
-| [acli](https://developer.atlassian.com/cloud/acli/guides/install-acli/) | jira-workitem-implementer, jira-workitem-analyzer, triage | See Atlassian docs |
+| [acli](https://developer.atlassian.com/cloud/acli/guides/install-acli/) | jira-workitem-implementer, jira-workitem-analyzer, triage, torch-qa | See Atlassian docs |
 | [Firecrawl API key](https://firecrawl.dev) | meta-agent (web scraping) | `claude mcp add firecrawl -e FIRECRAWL_API_KEY=fc-<KEY> -- npx -y firecrawl-mcp` |
+| [chrome-devtools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp) | torch-qa (live browser testing) | `claude mcp add chrome-devtools -- npx -y chrome-devtools-mcp` |
 
 ## Agents
 
@@ -75,6 +76,7 @@ cd claude-code-extensions
 | **information-consolidator** | Consolidate scattered info into structured format |
 | **datadog-log-searcher** | Query DataDog Logs API v2 with time filtering |
 | **triage** | Investigate support tickets, generate HTML triage reports |
+| **torch-qa** | Functionally test Jira work items — context, test plan, browser testing, screenshot proof |
 | **agent-efficiency-optimizer** | Optimize agent configurations for clarity |
 
 ### Agent chaining examples
@@ -102,6 +104,7 @@ Available as `/torch:<command>` in Claude Code:
 | **pr-gemini-review** | Trigger Gemini code review on current PR |
 | **vuln-remediation** | Remediate dependency vulnerabilities via upgrades + draft PR |
 | **triage** | Investigate Jira support ticket, generate HTML triage report |
+| **qa** | Functionally QA a Jira work item across environments (dev→staging→prod) in one accumulating report, with a confirmed test plan + screenshot proof |
 | **upload-artifact** | Upload HTML to S3 artifacts bucket with shareable URL |
 | **reopen-assessment** | Reopen a 360 assessment for additional feedback |
 
@@ -119,6 +122,7 @@ Available as `/torch:<command>` in Claude Code:
 | Address PR review comments | `pr-review-comment-resolver` |
 | Create a new agent | `meta-agent` |
 | Investigate support ticket | `/torch:triage` |
+| QA / functionally test a ticket | `/torch:qa` |
 | Fix vulnerable dependencies | `/torch:vuln-remediation` |
 
 ## Documentation
