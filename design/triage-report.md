@@ -121,7 +121,7 @@ Since reports are self-contained HTML (no external fonts), include fallback stac
 
 ### Typography Rules
 
-- Body text max-width: 65-75ch for readability.
+- Body paragraphs fill the content column. Do NOT add a narrower per-paragraph `max-width` (e.g. `72ch`): it strands text as a narrow column beside full-width tables, KV grids, the metrics bar, and the verdict banner. The 1100px content `max-width` already bounds line length, and the verdict banner already sets the full-width precedent.
 - Vary spacing between sections — not every gap identical. Larger gaps before major sections, tighter within.
 - Headings get letter-spacing: -0.01em to -0.02em at larger sizes.
 - Links use underline decoration, not color-only differentiation.
