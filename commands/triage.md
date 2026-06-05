@@ -35,22 +35,14 @@ Investigate the issue end-to-end:
 7. Write the report to ~/d/triage-reports/reports/{TICKET_ID}-triage.html
 ```
 
-4. After the agent completes, git add, commit, and push:
-
-```bash
-cd ~/d/triage-reports && git add reports/{TICKET_ID}-triage.html && git commit -m "{TICKET_ID}: triage report" && git push
-```
-
-5. Upload the report to S3 for internal sharing:
-
-```bash
-aws s3 cp ~/d/triage-reports/reports/{TICKET_ID}-triage.html s3://torch-internal-artifacts/triage/{TICKET_ID}-triage.html --content-type "text/html" --profile torch-cognito
-```
-
-6. Report the file path, git push status, and shareable URL to the user:
+4. Upload the report to S3 for internal sharing via the `torch:upload-artifact` skill:
 
 ```
-https://d6k0bi38kbaeg.cloudfront.net/triage/{TICKET_ID}-triage.html
+/torch:upload-artifact ~/d/triage-reports/reports/{TICKET_ID}-triage.html triage/{TICKET_ID}-triage.html
 ```
+
+Do NOT git add, commit, or push the report. The file stays local and is shared via S3 only.
+
+5. Report the file path and the shareable URL returned by the upload skill to the user.
 
 Note: recipients need a @torch.io Google account to access.

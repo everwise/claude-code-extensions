@@ -20,6 +20,7 @@ Parse the arguments: the **first argument** is the **PR number** (required). Any
 2. **All comments MUST be prefixed** with `[🤖 Claude]` so they are clearly identified as AI-generated.
 3. **Use `gh pr diff` for the diff** — never `git diff`. This ensures accurate file paths, line numbers, and exclusion of merge commits.
 4. **NEVER touch git working tree.** Do not checkout to the PR branch, do not make changes in the git working tree.
+5. **NEVER duplicate an existing finding.** Before posting any comment, check it against all existing non-resolved comments (including from `gemini-code-assist` and other human reviewers). If the same issue is already raised, do NOT post a duplicate.
 
 ---
 
@@ -41,10 +42,44 @@ Extract:
 
 - `PR_NUMBER` — from the first argument
 - `HEAD_SHA` — the head commit SHA (needed for review API: `commit_id`)
-- `OWNER/REPO` — from `gh repo view --json nameWithOwner --jq '.nameWithOwner'`
+- `OWNER_REPO` — from `gh repo view --json nameWithOwner --jq '.nameWithOwner'` (e.g. `everwise/torch`)
+- `OWNER` and `REPO` — the two halves of `OWNER_REPO`, split on `/`
 - Changed file paths and diff hunks
 
-### Step 2: Determine Review Scope
+### Step 2: Gather Existing Review Comments
+
+Before running any review, pull **all existing non-resolved comments** on the PR and keep them in context for the entire review. These are used both for deduplication (Step 5) and for responding to `gemini-code-assist` (Step 8).
+
+```bash
+# Inline review comments (file/line-anchored), with resolution status via GraphQL
+gh api graphql -f query='
+  query($owner: String!, $repo: String!, $pr: Int!) {
+    repository(owner: $owner, name: $repo) {
+      pullRequest(number: $pr) {
+        reviewThreads(first: 100) {
+          nodes {
+            isResolved
+            isOutdated
+            comments(first: 50) {
+              nodes { author { login } body path line diffHunk url }
+            }
+          }
+        }
+      }
+    }
+  }' -F owner="${OWNER}" -F repo="${REPO}" -F pr="${PR_NUMBER}"
+
+# Issue-level (general) comments — includes gemini-code-assist summary comments
+gh api "repos/${OWNER_REPO}/issues/${PR_NUMBER}/comments" \
+  --jq '.[] | {author: .user.login, body: .body, url: .html_url}'
+```
+
+Build two in-memory lists:
+
+- **Existing findings** — every comment from a `reviewThread` where `isResolved == false`, plus relevant issue-level comments. Record author, file, line, and the gist of each. Use this to deduplicate your own findings.
+- **Unresolved gemini comments** — comments authored by `gemini-code-assist` (or `gemini-code-assist[bot]`) in any thread where `isResolved == false`. Capture each comment's thread, body, file, line, and `url` for Step 8.
+
+### Step 3: Determine Review Scope
 
 Parse `$ARGUMENTS` to decide which review aspects to run:
 
@@ -65,9 +100,9 @@ Based on changed files, determine which reviews apply:
 - **If types added/modified**: type-design-analyzer
 - **After passing review**: code-simplifier
 
-### Step 3: Launch Review Agents
+### Step 4: Launch Review Agents
 
-Provide each agent with the **full `gh pr diff` output** so findings reference accurate file paths and line numbers.
+Provide each agent with the **full `gh pr diff` output** so findings reference accurate file paths and line numbers. Also provide the **Existing findings** list from Step 2 and instruct each agent to skip anything already raised by another reviewer.
 
 Launch agents sequentially by default, or in parallel if the user requests it.
 
@@ -80,7 +115,18 @@ SEVERITY: critical | important | suggestion
 FINDING: <description>
 ```
 
-### Step 4: Check for Existing Pending Review
+### Step 5: Deduplicate Findings Against Existing Comments
+
+Before posting anything, compare every agent finding against the **Existing findings** list from Step 2.
+
+For each finding, decide:
+
+- **Already raised** (same issue, same location, by any reviewer including `gemini-code-assist`) → **drop it.** Do not post. Track it for the "Already Covered" summary section.
+- **Net-new** → keep for posting in Step 7.
+
+Match on substance, not exact wording — a finding at a nearby line describing the same root cause counts as a duplicate.
+
+### Step 6: Check for Existing Pending Review
 
 Before creating comments, check if the current user already has a pending review on this PR:
 
@@ -94,9 +140,9 @@ gh api "repos/${OWNER_REPO}/pulls/${PR_NUMBER}/reviews" \
 ```
 
 - **If a pending review exists**: reuse its `review_id` for adding comments.
-- **If no pending review**: create one with `event: "PENDING"` (see Step 5).
+- **If no pending review**: create one with `event: "PENDING"` (see Step 7).
 
-### Step 5: Post Inline Comments
+### Step 7: Post Inline Comments
 
 For each finding, post an inline review comment on the specific file and line.
 
@@ -135,7 +181,28 @@ gh api "repos/${OWNER_REPO}/pulls/${PR_NUMBER}/reviews/${REVIEW_ID}/comments" \
 
 **Important**: The `line` number must correspond to a line within a diff hunk. If a finding references a line not in the diff, attach it to the nearest changed line in that file, or skip it and include it in the summary instead.
 
-### Step 6: Print Summary
+### Step 8: Respond to Unresolved Gemini Comments
+
+For each **unresolved gemini comment** captured in Step 2, evaluate its finding against the code and decide one of three actions:
+
+| Verdict | Action |
+|---------|--------|
+| **Agree, nothing to add** | Do NOT respond. Leave the comment as-is. |
+| **Agree, but have additional insight** | Reply to the thread with the added insight only — do not restate gemini's point. |
+| **Disagree** | Reply to the thread stating why, with specific reasoning or code references. |
+
+Replies go to the existing thread (they are NOT part of the pending review — they post immediately), and must be prefixed with `[🤖 Claude]`:
+
+```bash
+# Reply to a gemini review-comment thread (use the comment ID of the gemini comment)
+gh api "repos/${OWNER_REPO}/pulls/${PR_NUMBER}/comments/${GEMINI_COMMENT_ID}/replies" \
+  --method POST \
+  -f body="[🤖 Claude] <agreement insight or disagreement reasoning>"
+```
+
+Do not resolve or dismiss any thread — leave resolution to the user.
+
+### Step 9: Print Summary
 
 After posting all comments, print a summary to the terminal:
 
@@ -157,6 +224,12 @@ After posting all comments, print a summary to the terminal:
 
 ## Findings Not Posted (outside diff range): (<count>)
 - [agent-name] file:line — description
+
+## Already Covered by Other Reviewers (<count>)
+- [reviewer] file:line — description (skipped to avoid duplication)
+
+## Gemini Comment Responses (<count>)
+- file:line — AGREED (silent) | AGREED + insight | DISAGREED — short note
 
 ## Strengths
 - What's well-done in this PR
