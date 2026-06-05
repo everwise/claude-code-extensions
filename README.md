@@ -108,6 +108,18 @@ Available as `/torch:<command>` in Claude Code:
 | **upload-artifact** | Upload HTML to S3 artifacts bucket with shareable URL |
 | **reopen-assessment** | Reopen a 360 assessment for additional feedback |
 
+## Skills
+
+Skills are invoked by name (e.g. `/thermos`) or automatically when relevant.
+
+| Skill | Purpose |
+|---|---|
+| **thermos** | Launch both thermo-nuclear review subagents in parallel, then synthesize deduplicated findings |
+| **thermo-nuclear-review** | Deep correctness/security branch audit rubric (bugs, breakage, devex, feature-flag leaks), diff-scoped |
+| **thermo-nuclear-code-quality-review** | Harsh code-quality rubric (maintainability, structure, file growth, spaghetti, abstractions) |
+
+The thermos skills pair with two subagents (`thermo-nuclear-review-subagent`, `thermo-nuclear-code-quality-review-subagent`) listed under Agents.
+
 ## Quick Reference
 
 | Task | What to use |
@@ -130,3 +142,20 @@ Available as `/torch:<command>` in Claude Code:
 Full agent documentation with usage examples: [agents/README.mdx](agents/README.mdx)
 
 Command documentation: [commands/README.md](commands/README.md)
+
+## Attribution
+
+The **thermos** skills and their two subagents are ported from the
+[Thermos](https://github.com/cursor/plugins/tree/main/thermos) plugin in the
+official [cursor/plugins](https://github.com/cursor/plugins) marketplace.
+
+- **Author:** Cursor (plugins@cursor.com)
+- **License:** MIT — Copyright (c) 2026 Cursor. See [skills/thermos/LICENSE](skills/thermos/LICENSE).
+- **Source files:** `skills/thermos/`, `skills/thermo-nuclear-review/`,
+  `skills/thermo-nuclear-code-quality-review/`,
+  `agents/thermo-nuclear-review-subagent.md`,
+  `agents/thermo-nuclear-code-quality-review-subagent.md`
+
+Ported to Claude Code's `~/.claude/skills` and `~/.claude/agents` layout; skill
+content is unmodified. MIT permits use, modification, and redistribution with
+the copyright and permission notice retained (preserved in the LICENSE file above).

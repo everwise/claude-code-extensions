@@ -1,9 +1,10 @@
-# Ignore everything except agents, commands, design, and templates directories
+# Ignore everything except agents, commands, design, templates, and skills directories
 /*
 !/agents/
 !/commands/
 !/design/
 !/templates/
+!/skills/
 !/.gitignore
 !/README.md
 !/install.sh

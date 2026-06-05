@@ -7,6 +7,7 @@ AGENTS_DIR="$CLAUDE_DIR/agents"
 COMMANDS_DIR="$CLAUDE_DIR/commands"
 DESIGN_LINK="$CLAUDE_DIR/design"
 TEMPLATES_LINK="$CLAUDE_DIR/templates"
+SKILLS_DIR="$CLAUDE_DIR/skills"
 NAMESPACE="torch"
 
 RED='\033[0;31m'
@@ -85,6 +86,21 @@ check_status() {
         warn "  Templates: not installed"
     fi
 
+    if [[ -d "$REPO_DIR/skills" ]]; then
+        local linked=0 total=0
+        for skill_path in "$REPO_DIR/skills"/*/; do
+            [[ -d "$skill_path" ]] || continue
+            total=$((total + 1))
+            local skill_link="$SKILLS_DIR/$(basename "${skill_path%/}")"
+            [[ -L "$skill_link" ]] && linked=$((linked + 1))
+        done
+        if [[ $linked -eq $total && $total -gt 0 ]]; then
+            info "  Skills:    $linked/$total linked in $SKILLS_DIR"
+        else
+            warn "  Skills:    $linked/$total linked in $SKILLS_DIR"
+        fi
+    fi
+
     echo ""
 
     if [[ -L "$agents_link" && -L "$commands_link" ]]; then
@@ -136,21 +152,42 @@ install() {
     ln -sf "$REPO_DIR/design" "$DESIGN_LINK"
     ln -sf "$REPO_DIR/templates" "$TEMPLATES_LINK"
 
+    # Skills are symlinked individually — Claude Code discovers
+    # ~/.claude/skills/<name>/SKILL.md (single level, not namespaced).
+    if [[ -d "$REPO_DIR/skills" ]]; then
+        mkdir -p "$SKILLS_DIR"
+        for skill_path in "$REPO_DIR/skills"/*/; do
+            [[ -d "$skill_path" ]] || continue
+            skill_path="${skill_path%/}"
+            local skill_link="$SKILLS_DIR/$(basename "$skill_path")"
+            if [[ -L "$skill_link" || -e "$skill_link" ]]; then
+                warn "Replacing existing skill link: $skill_link"
+                rm -f "$skill_link"
+            fi
+            ln -sf "$skill_path" "$skill_link"
+        done
+    fi
+
     echo ""
     info "Installed:"
     info "  Agents:    $agents_link -> $REPO_DIR/agents"
     info "  Commands:  $commands_link -> $REPO_DIR/commands"
     info "  Design:    $DESIGN_LINK -> $REPO_DIR/design"
     info "  Templates: $TEMPLATES_LINK -> $REPO_DIR/templates"
+    if [[ -d "$REPO_DIR/skills" ]]; then
+        info "  Skills:    $SKILLS_DIR/<name> -> $REPO_DIR/skills/<name>"
+    fi
     echo ""
 
-    local agent_count command_count
+    local agent_count command_count skill_count
     agent_count=$(find "$REPO_DIR/agents" -name '*.md' -not -name 'README*' 2>/dev/null | wc -l | tr -d ' ')
     command_count=$(find "$REPO_DIR/commands" -name '*.md' -not -name 'README*' 2>/dev/null | wc -l | tr -d ' ')
-    info "$agent_count agents and $command_count commands now available in Claude Code."
+    skill_count=$(find "$REPO_DIR/skills" -maxdepth 2 -name 'SKILL.md' 2>/dev/null | wc -l | tr -d ' ')
+    info "$agent_count agents, $command_count commands, and $skill_count skills now available in Claude Code."
     echo ""
     echo "Agents are used automatically by Claude Code when relevant."
     echo "Commands available as /torch:<command> (e.g., /torch:pr, /torch:triage)."
+    echo "Skills are invoked by name (e.g. /thermos) or automatically when relevant."
 }
 
 uninstall() {
@@ -183,6 +220,19 @@ uninstall() {
         rm "$TEMPLATES_LINK"
         info "Removed: $TEMPLATES_LINK"
         removed=1
+    fi
+
+    if [[ -d "$REPO_DIR/skills" ]]; then
+        for skill_path in "$REPO_DIR/skills"/*/; do
+            [[ -d "$skill_path" ]] || continue
+            local skill_link="$SKILLS_DIR/$(basename "${skill_path%/}")"
+            # Only remove links that point back into this repo.
+            if [[ -L "$skill_link" && "$(readlink "$skill_link")" == "$REPO_DIR/skills/"* ]]; then
+                rm "$skill_link"
+                info "Removed: $skill_link"
+                removed=1
+            fi
+        done
     fi
 
     if [[ $removed -eq 0 ]]; then
