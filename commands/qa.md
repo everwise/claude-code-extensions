@@ -101,6 +101,8 @@ The report is **data-driven from a fixed template** — you never hand-write its
 
 ### 5. Execute the tests (chrome-devtools MCP, main thread)
 
+**Preflight — require the chrome-devtools MCP.** Before any testing, confirm the chrome-devtools MCP tools (`navigate_page`, `take_snapshot`, `take_screenshot`, `click`, `fill`, `wait_for`, …) are actually available. If they are not, **stop — do not fall back to the Claude-in-Chrome extension** (the `computer` / browser_batch tools). The extension cannot save screenshots to disk (it returns in-memory image refs only), so the artifact's screenshot proof would silently break. Tell the user the chrome-devtools MCP isn't connected and to restart the Claude Code session so it loads (it is registered at user scope as `chrome-devtools`), then re-run. Resume only once the chrome-devtools tools are present.
+
 Once the plan is confirmed, test on the **resolved environment** only, writing results into `results.<env>`. Work through `testCases` in priority order. For each case:
 
 - **On `prod`, confirm the account first.** Production accounts belong to real customers — ask the user which account(s) to use (do not reuse a dev/staging login or guess) and record them in `results.<env>.testAccounts` before logging in.
